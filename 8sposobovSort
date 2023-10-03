@@ -1,0 +1,378 @@
+#include <iostream> 
+#include <stdio.h> 
+#include <algorithm> 
+#include <fstream> 
+using namespace std;
+
+void fillRandomArray(int arr[], const int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        arr[i] = rand() % 201;
+    }
+}
+
+void fillSortArray(int arr[], const int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        arr[i] = i;
+    }
+}
+
+void fillReverseArray(int arr[], const int size)
+{
+    for (int i = size - 1; i > 0; i--)
+    {
+        arr[size - i - 1] = i;
+    }
+}
+
+void printArray(int arr[], const int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        cout << " " << arr[i];
+    }
+}
+
+//простой выбор 
+void SelectionSort(int arr[], const int size, ofstream&FILE)
+{
+    int i, j, index, swapp = 0, count = 0;
+    for (i = 0; i < size - 1; i++)
+    {
+        index = i;
+        count++;
+        for (j = i + 1; j < size; j++)
+            if (arr[j] < arr[index])
+            {
+                index = j;
+                swapp++;
+            }
+        swap(arr[i], arr[index]);
+    }
+    FILE << "swap = " << swapp << "count = " << count << ";";
+}
+
+//простой обмен 
+void BubbleSort(int arr[], const int size, ofstream&FILE)
+{
+    int i, j, swapp = 0, count = 0;
+    for (i = 0; i < size - 1; i++)
+        for (j = size - 1; j > i; j--)
+        {
+            count++;
+            if (arr[j - 1] > arr[j])
+            {
+                swapp++;
+                swap(arr[j - 1], arr[j]);
+            }
+                
+        }
+    FILE << "swap = " << swapp << "count = " << count << ";";
+}
+
+//простые вставки 
+void InsertionSort(int arr[], const int size, ofstream&FILE)
+{
+    int i, j, swapp = 0, count = 0;
+    int temp;
+
+    for (i = 1; i < size; i++)
+    {
+        j = i;
+        temp = arr[i];
+        count++;
+        while (j > 0 && temp < arr[j - 1])
+        {
+            arr[j] = arr[j - 1];
+            j--;
+            swapp++;
+        }
+        arr[j] = temp;
+    }
+    FILE << "swap = " << swapp << "count = " << count << ";";
+}
+
+//бинерные вставки 
+void binaryInput(int arr[], const int size, ofstream&FILE)
+{
+    int swapp = 0, count = 0;
+    for (int i = 1; i < size; i++)
+    {
+        int key = arr[i];
+        int j = i - 1;
+        while (j >= 0 && arr[j] > key)
+        {
+            count++;
+            swapp++;
+            arr[j + 1] = arr[j];
+            j = j - 1;
+        }
+        arr[j + 1] = key;
+        swapp++;
+    }
+    FILE << "swap = " << swapp << "count = " << count << ";";
+}
+
+//шейкер сортировка 
+void sheikerSort(int arr[], const int size, ofstream&FILE)
+{
+    int l = 1, r = size - 1, k = size - 1, j, swapp = 0, count = 0;
+    while (l <= r)
+    {
+        for (int j = r; j >= 1; j--)
+        {
+            count++;
+            if (arr[j - 1] > arr[j])
+            {
+                swapp++;
+                int x = arr[j - 1];
+                arr[j - 1] = arr[j];
+                arr[j] = x;
+                k = j;
+            }
+        }
+        l = k + 1;
+        for (j = l; j <= r; j++)
+        {
+            count++;
+            if (arr[j - 1] > arr[j])
+            {
+                swapp++;
+                int x = arr[j - 1];
+                arr[j - 1] = arr[j];
+                arr[j] = x;
+                k = j;
+            }
+        }
+        r = k - 1;
+    }
+    FILE << "swap = " << swapp << "count = " << count << ";";
+}
+
+//сортировка Шелла 
+void shellSort(int arr[], const int size, ofstream&FILE) 
+{
+    int gap = size / 2, swapp = 0, count = 0;
+    while (gap > 0) {
+        for (int i = gap; i < size; i++) 
+        {
+            count++;
+            int temp = arr[i];
+            int j = i;
+            while (j >= gap && arr[j - gap] > temp) 
+            {
+                arr[j] = arr[j - gap];
+                j -= gap;
+                swapp++;
+            }
+            arr[j] = temp;
+        }
+        gap = gap / 2;
+    }
+    FILE << "swap = " << swapp << "count = " << count << ";";
+}
+
+//пирамидальная сортировка 
+void heapify(int arr[], int size, int i, int&swapp, int&count)
+{
+    int largest = i;
+    int l = 2 * i + 1;
+    int r = 2 * i + 2;
+
+    if (l < size && arr[l] > arr[largest])
+        largest = l;
+    count++;
+
+    if (r < size && arr[r] > arr[largest])
+        largest = r;
+    count++;
+
+    if (largest != i)
+    {
+        swapp++;
+        swap(arr[i], arr[largest]);
+        heapify(arr, size, largest, swapp, count);
+    }
+}
+void heapSort(int arr[], int const size, ofstream& FILE)
+{
+    int swapp = 0, count = 0;
+
+    for (int i = size / 2 - 1; i >= 0; i--)
+        heapify(arr, size, i, swapp, count);
+
+    for (int i = size - 1; i >= 0; i--) {
+        swapp++;
+        swap(arr[0], arr[i]);
+        heapify(arr, i, 0, swapp, count);
+    }
+    FILE << "swap = " << swapp << "count = " << count << ";";
+}
+
+//быстрая  сортировка 
+void QuickSort(int arr[], int p, int r, int &swapp, int &count)
+{
+    int i, j;
+    int x;
+    i = p;
+    j = r;
+    x = arr[(i + j) / 2];
+    do
+    {
+        while (arr[i] < x) i++;
+        while (arr[j] > x) j--;
+        count++;
+        if (i <= j)
+        {
+            swapp++;
+            swap(arr[i], arr[j]);
+            i++;
+            j--;
+        }
+    } while (i <= j);
+    if (j > p)
+        QuickSort(arr, p, j, swapp, count);
+    if (i < r)
+        QuickSort(arr, i, r, swapp, count);
+}
+
+int main()
+{
+    const int size = 201;
+    int arr[size]{ };
+
+    ofstream FILE;
+    FILE.open("Result.csv");
+    FILE << "Random; Sort; Reverse" << endl;
+    
+    fillRandomArray(arr, size);
+    SelectionSort(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+    
+    fillSortArray(arr, size);
+    SelectionSort(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+    
+    fillReverseArray(arr, size);
+    SelectionSort(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+   
+    
+    fillRandomArray(arr, size);
+    BubbleSort(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+
+    fillSortArray(arr, size);
+    BubbleSort(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+
+    fillReverseArray(arr, size);
+    BubbleSort(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+    
+    
+    fillRandomArray(arr, size);
+    InsertionSort(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+
+    fillSortArray(arr, size);
+    InsertionSort(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+
+    fillReverseArray(arr, size);
+    InsertionSort(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+    
+    
+    fillRandomArray(arr, size);
+    binaryInput(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+
+    fillSortArray(arr, size);
+    binaryInput(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+
+    fillReverseArray(arr, size);
+    binaryInput(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+    
+    
+    fillRandomArray(arr, size);
+    sheikerSort(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+
+    fillSortArray(arr, size);
+    sheikerSort(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+
+    fillReverseArray(arr, size);
+    sheikerSort(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+    
+    
+    fillRandomArray(arr, size);
+    shellSort(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+
+    fillSortArray(arr, size);
+    shellSort(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+
+    fillReverseArray(arr, size);
+    shellSort(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+    
+    
+    fillRandomArray(arr, size);
+    heapSort(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+
+    fillSortArray(arr, size);
+    heapSort(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+
+    fillReverseArray(arr, size);
+    heapSort(arr, size, FILE);
+    printArray(arr, size);
+    FILE << endl;
+    int swapp = 0, count = 0;
+    
+
+    fillRandomArray(arr, size);
+    QuickSort(arr, 0, size - 1, swapp, count);
+    printArray(arr, size);
+    FILE << "swap = " << swapp << "count = " << count << ";" << endl;
+
+    fillSortArray(arr, size);
+    QuickSort(arr, 0, size - 1, swapp, count);
+    printArray(arr, size);
+    FILE << "swap = " << swapp << "count = " << count << ";" << endl;
+
+    fillReverseArray(arr, size);
+    QuickSort(arr, 0, size - 1, swapp, count);
+    printArray(arr, size);
+    FILE << "swap = " << swapp << "count = " << count << ";" << endl;
+}
